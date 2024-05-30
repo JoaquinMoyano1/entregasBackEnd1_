@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        /* Agrega estilos según sea necesario */
+    </style>
+</head>
+<body>
+    <h1>Chat</h1>
+    <div id="chat-box">
+        <!-- Mensajes serán agregados aquí -->
+    </div>
+    <form id="chat-form">
+        <input type="text" id="user" placeholder="Correo del usuario" required>
+        <input type="text" id="message" placeholder="Mensaje" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const chatBox = document.getElementById('chat-box');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const user = document.getElementById('user').value;
+            const message = document.getElementById('message').value;
+
+            await fetch('/api/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user, message }),
+            });
+
+            document.getElementById('message').value = '';
+            loadMessages();
+        });
+
+        async function loadMessages() {
+            const res = await fetch('/api/messages');
+            const messages = await res.json();
+
+            chatBox.innerHTML = messages.map(msg => `<p><strong>${msg.user}:</strong> ${msg.message}</p>`).join('');
+        }
+
+        loadMessages();
+    </script>
+</body>
+</html>
